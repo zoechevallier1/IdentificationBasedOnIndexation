@@ -32,10 +32,12 @@ class SourceFile:
                 desc[frozenset(properties)] = set(type)
 
         self.descriptions = desc
-
-        for description, type in self.descriptions.items():
-            print(description)
-            print(type)
         
 
+    def getDescriptionsType(self,C):
+        descriptions = set()
+        for description, type in self.descriptions.items():
+            if str(C) in type:
+                descriptions.add(frozenset(description))
+        return descriptions
 

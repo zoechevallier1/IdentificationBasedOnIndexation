@@ -9,31 +9,38 @@ class TargetFile:
         self.graph = rdflib.Graph()
         self.graph.parse(path, format="n3") 
 
-        self.classes = set()
+        self.candidateDescriptions = dict()
 
         # Generating descriptions from a source file : the distinct property sets represented
         queryElts = "SELECT distinct ?c WHERE { ?c rdf:type ?o . FILTER (?o IN (rdfs:Class, owl:Class))}"
         resultsElements = self.graph.query(queryElts)
+
+        
         
         desc = dict()
         for r in resultsElements:
-            self.classes.add(r['c'])
+            self.candidateDescriptions[str(r['c'])] = set()
             queryProperties = "SELECT distinct ?p WHERE { <" + str(r['c']) + "> ?p ?o. FILTER (?p NOT IN (rdf:type))}" 
             resProperties = self.graph.query(queryProperties)
             properties = set()
             for resProp in resProperties:
                 properties.add(str(resProp['p']))
-            
-            if frozenset(properties) in desc:
-                desc[frozenset(properties)] = desc[frozenset(properties)] + r['c']
+            if frozenset(properties) in desc.keys():
+                desc[frozenset(properties)].add(frozenset(properties))
             else:
-                desc[frozenset(properties)] = r['c']
+                desc[frozenset(properties)] = set(frozenset(properties))
+
+            
+            self.candidateDescriptions[str(r['c'])].add(frozenset(properties))
 
         self.descriptions = desc
 
-        for c in self.classes:
-            print(c)
-        for description, value in self.descriptions.items():
+        print("descriptions de départ :")
+        for key, description in self.candidateDescriptions.items():
+            print(key)
             print(description)
-            print(value)
-                
+
+       
+    def printCandidateDescriptions(self, C):
+        for description in self.candidateDescriptions[str(C)]:
+            print(description)

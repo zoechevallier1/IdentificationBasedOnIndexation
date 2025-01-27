@@ -39,5 +39,13 @@ class MatchFile:
             
             self.matches.append(match)
 
-        for matchs in self.matches:
-            print(matchs)
+    def printMatches(self):
+        for m in self.matches:
+            print(m)
+
+    def class_matches_with_C(self, C):
+        equivalent_classes = set()
+        for match in self.matches:
+            if match["type"] == "class" and (str(C) == match["target_class"]):
+                equivalent_classes.add(match["source_class"])
+        return equivalent_classes
